@@ -41,10 +41,14 @@ class Personas extends Migration
                 'constraint' => 255, // Mejor que TINYTEXT
                 'null' => true,
             ],
+            'propietario_id' => [
+                'type' => 'int',
+            ],
         ]);
         $this->forge->addKey('id_personas', true); // Clave primaria en id
         $this->forge->addUniqueKey('dni_cuit'); // Asegura que dni sea único, pero no clave primaria
         $this->forge->createTable('Personas');
+        $this->forge->addForeignKey('propietario_id', 'usuarios', 'id', 'CASCADE', 'CASCADE');
     }
 
     public function down()
