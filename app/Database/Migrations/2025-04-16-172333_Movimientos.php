@@ -16,8 +16,9 @@ class Movimientos extends Migration
                 'auto_increment' => true,
             ],
             'id_carpeta' => [
-                'type' => 'INT',  // FK carpeta
+                'type' => 'INT',
                 'constraint' => 5,
+                'unsigned' => true,
             ],
             'fecha_carga' => [
                 'type' => 'DATE',
@@ -29,48 +30,58 @@ class Movimientos extends Migration
                 'type' => 'DATE',
             ],
             'tiempo_trabajo' => [
-                'type'       => 'DECIMAL', // Tipo DECIMAL
-                'constraint' => [2, 1],   // Precisión de 2 dígitos, 1 decimal
-                'null'       => false,    // No permite valores nulos
-                'default'    => 0.0,     // CORREGIDO: Valor por defecto válido
+                'type' => 'DECIMAL',
+                'constraint' => '4,1',
+                'null' => false,
+                'default' => 0.0,
             ],
             'id_otro_movimiento' => [
                 'type' => 'INT',
                 'constraint' => 5,
+                'unsigned' => true,
                 'null' => true,
             ],
             'id_estado' => [
                 'type' => 'INT',
                 'constraint' => 5,
+                'unsigned' => true,
             ],
             'descripcion' => [
                 'type' => 'TEXT',
                 'null' => true,
             ],
             'tarea_pendiente' => [
-                'type'    => 'BOOLEAN', // Tipo BOOLEAN
-                'default' => FALSE,     // Valor por defecto (FALSE = no hay)
+                'type' => 'TINYINT',
+                'constraint' => 1,
+                'default' => 0,
             ],
             'desc_tarea_pend' => [
                 'type' => 'TEXT',
                 'null' => true,
             ],
+            'notificacion' => [
+                'type' => 'TINYINT',
+                'constraint' => 1,
+                'default' => 0,
+            ]
         ]);
 
-        $this->forge->addKey('id_movimiento', true); // Clave primaria en id_movimiento
+        $this->forge->addPrimaryKey('id_movimiento');
+        $this->forge->addKey('id_carpeta');
+        $this->forge->addKey('id_estado');
+        $this->forge->addKey('id_otro_movimiento');
 
-        // CORREGIDO: Nombres de tablas en minúsculas y consistentes
+        // Crear la tabla primero
+        $this->forge->createTable('movimientos', true, ['engine' => 'InnoDB']);
+
+        // Luego añadir las claves foráneas
         $this->forge->addForeignKey('id_carpeta', 'carpetas', 'id_carpeta', 'CASCADE', 'CASCADE');
-        //$this->forge->addForeignKey('id_otro_movimiento', 'movimientos', 'id_movimiento', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('id_estado', 'estados', 'id_estado', 'CASCADE', 'CASCADE');
-
-        // CORREGIDO: Nombre de la tabla en minúsculas
-        $this->forge->createTable('movimientos'); // Crear la tabla
+        $this->forge->addForeignKey('id_otro_movimiento', 'movimientos', 'id_movimiento', 'SET NULL', 'CASCADE');
     }
 
     public function down()
     {
-        // CORREGIDO: Nombre de la tabla en minúsculas
         $this->forge->dropTable('movimientos');
     }
 }
